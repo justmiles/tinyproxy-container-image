@@ -1,0 +1,27 @@
+FROM alpine:3.20.1
+
+# Set default configs
+ENV TINYPROXY_CONF_USER=nobody
+ENV TINYPROXY_CONF_GROUP=nobody
+ENV TINYPROXY_CONF_PORT=8888
+ENV TINYPROXY_CONF_TIMEOUT=600
+ENV TINYPROXY_CONF_DEFAULT_ERROR_FILE="/usr/share/tinyproxy/default.html"
+ENV TINYPROXY_CONF_STAT_FILE="/usr/share/tinyproxy/stats.html"
+ENV TINYPROXY_CONF_LOG_LEVEL=Connect
+ENV TINYPROXY_CONF_MAX_CLIENTS=100
+ENV TINYPROXY_CONF_ALLOW=127.0.0.1
+ENV TINYPROXY_CONF_VIA_PROXY_NAME="tinyproxy"
+ENV S6_VERBOSITY 0
+ENV S6_CMD_WAIT_FOR_SERVICES_MAXTIME 0
+ENV HEALTHCHECK_PORT=8889
+ENV PROMETHEUS_EXPORTER_PORT=8887
+RUN apk add --no-cache tinyproxy bash sed s6-overlay busybox curl netcat-openbsd w3m
+
+COPY entrypoint.sh /entrypoint.sh
+COPY s6-rc.d /etc/s6-overlay/s6-rc.d
+
+EXPOSE 8887 8888 8889
+
+ENTRYPOINT ["/init"]
+
+CMD ["/entrypoint.sh"]

@@ -1,0 +1,4 @@
+google.com
+*.google.com
+*.yahoo.com
+yahoo.com

@@ -1,0 +1,11 @@
+#!/command/with-contenv bash
+
+set -e
+
+# wait for tinyproxy to start
+sleep 5
+
+while true; do
+  STATUS=$(http_proxy=localhost:$TINYPROXY_CONF_PORT curl -fsILo - tinyproxy.stats)
+  echo -e "${STATUS}\nOK" | nc -l -k -p $HEALTHCHECK_PORT -q 1 | xargs
+done

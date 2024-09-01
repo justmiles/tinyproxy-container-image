@@ -1,0 +1,11 @@
+#!/command/with-contenv bash
+
+set -e
+
+# wait for tinyproxy to start
+sleep 5
+
+while true; do
+  METRICS=$(http_proxy=http://localhost:$TINYPROXY_CONF_PORT/ w3m http://tinyproxy.stats | grep -v statistics | tr '[A-Z]' '[a-z]' | sed -e 's/([^()]*)//g' | sed 's/  */_/g' | rev | sed 's/_/ /' | rev)
+  echo -e "HTTP/1.1 200 OK\n\n$METRICS" | nc -l -k -p $PROMETHEUS_EXPORTER_PORT -q 1 | xargs
+done
